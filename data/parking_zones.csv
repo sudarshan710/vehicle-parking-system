@@ -1,0 +1,6 @@
+zone_id,zone_name,rate_per_hour,is_valet
+Z001,Short Term A,50,False
+Z002,Short Term B,40,False
+Z003,Long Term A,30,False
+Z004,Valet A,70,True
+Z005,Economy Lot B,25,False
