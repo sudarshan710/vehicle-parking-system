@@ -36,5 +36,5 @@
 
 import pandas as pd
 
-df = pd.read_parquet('data/vehicles.parquet')
+df = pd.read_parquet('data/parking_events.parquet')
 print(df.head())

@@ -1,15 +1,3 @@
-2025-07-19 00:01:39,168 - INFO - Type SUV found: {'vehicle_id': 'V002', 'plate_number': 'MH14XY9876', 'type': 'SUV', 'owner_name': 'Neha Verma'}
-2025-07-19 00:01:39,169 - INFO - Type SUV found: {'vehicle_id': 'V004', 'plate_number': 'KA03ZX7788', 'type': 'SUV', 'owner_name': 'Sneha Kulkarni'}
-2025-07-19 00:01:39,169 - INFO - Type SUV found: {'vehicle_id': 'V007', 'plate_number': 'GJ05HH2299', 'type': 'SUV', 'owner_name': 'Rakesh Singh'}
-2025-07-19 00:01:51,414 - INFO - Type SUV found: {'vehicle_id': 'V002', 'plate_number': 'MH14XY9876', 'type': 'SUV', 'owner_name': 'Neha Verma'}
-2025-07-19 00:01:51,415 - INFO - Type SUV found: {'vehicle_id': 'V004', 'plate_number': 'KA03ZX7788', 'type': 'SUV', 'owner_name': 'Sneha Kulkarni'}
-2025-07-19 00:01:51,415 - INFO - Type SUV found: {'vehicle_id': 'V007', 'plate_number': 'GJ05HH2299', 'type': 'SUV', 'owner_name': 'Rakesh Singh'}
-2025-07-19 00:01:54,047 - INFO - Type SUV found: {'vehicle_id': 'V002', 'plate_number': 'MH14XY9876', 'type': 'SUV', 'owner_name': 'Neha Verma'}
-2025-07-19 00:01:54,047 - INFO - Type SUV found: {'vehicle_id': 'V004', 'plate_number': 'KA03ZX7788', 'type': 'SUV', 'owner_name': 'Sneha Kulkarni'}
-2025-07-19 00:01:54,048 - INFO - Type SUV found: {'vehicle_id': 'V007', 'plate_number': 'GJ05HH2299', 'type': 'SUV', 'owner_name': 'Rakesh Singh'}
-2025-07-19 00:01:55,522 - INFO - Type SUV found: {'vehicle_id': 'V002', 'plate_number': 'MH14XY9876', 'type': 'SUV', 'owner_name': 'Neha Verma'}
-2025-07-19 00:01:55,523 - INFO - Type SUV found: {'vehicle_id': 'V004', 'plate_number': 'KA03ZX7788', 'type': 'SUV', 'owner_name': 'Sneha Kulkarni'}
-2025-07-19 00:01:55,523 - INFO - Type SUV found: {'vehicle_id': 'V007', 'plate_number': 'GJ05HH2299', 'type': 'SUV', 'owner_name': 'Rakesh Singh'}
-2025-07-19 00:05:49,340 - INFO - Type SUV found: {'vehicle_id': 'V002', 'plate_number': 'MH14XY9876', 'type': 'SUV', 'owner_name': 'Neha Verma'}
-2025-07-19 00:05:49,340 - INFO - Type SUV found: {'vehicle_id': 'V004', 'plate_number': 'KA03ZX7788', 'type': 'SUV', 'owner_name': 'Sneha Kulkarni'}
-2025-07-19 00:05:49,341 - INFO - Type SUV found: {'vehicle_id': 'V007', 'plate_number': 'GJ05HH2299', 'type': 'SUV', 'owner_name': 'Rakesh Singh'}
+2025-07-19 01:12:19,456 - WARNING - PAID AMOUNT NEGATIVE. RECORD FLAGGED. {'event_id': 'E002', 'vehicle_id': 'V002', 'zone_id': 'Z002', 'entry_time': Timestamp('2024-07-18 09:00:00'), 'exit_time': Timestamp('2024-07-18 11:00:00'), 'paid_amount': -80.0, 'exit-entry': 120.0, 'flagged': 1}
+2025-07-19 01:12:19,462 - WARNING - INVALID EXIT-ENTRY TIME. RECORD FLAGGED. {'event_id': 'E012', 'vehicle_id': 'V005', 'zone_id': 'Z001', 'entry_time': Timestamp('2024-07-18 13:00:00'), 'exit_time': Timestamp('2024-07-18 12:00:00'), 'paid_amount': 20.0, 'exit-entry': -60.0, 'flagged': 1}
+2025-07-19 01:12:19,462 - WARNING - INVALID EXIT-ENTRY TIME. RECORD FLAGGED. {'event_id': 'E014', 'vehicle_id': 'V056', 'zone_id': 'Z001', 'entry_time': Timestamp('2024-07-18 14:00:00'), 'exit_time': Timestamp('2024-07-18 12:00:00'), 'paid_amount': 20.0, 'exit-entry': -120.0, 'flagged': 1}
