@@ -55,7 +55,8 @@ def main(analysis):
         elif choice == 'comp-zone':
             compare_zone_perfor()
         else:
-            print('\n Invalid choice.')
+            print(f"\n Invalid choice\n")
+            sys.exit(1)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
