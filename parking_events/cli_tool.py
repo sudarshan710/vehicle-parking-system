@@ -4,7 +4,8 @@ import os
 from pathlib import Path    
 import pandas as pd
 import logging
-
+from parking_events.sql_trigger import setup_database
+from parking_events.events_table import create_events_table
 
 FLAG_PATH = "parking_toolkit/flag.flag"
 COUNTER_FILE = 'operation_counter.txt'
@@ -90,9 +91,7 @@ def write(parquet_path):
     df['exit_entry'] = df['exit_entry'].fillna(0).astype(int)
 
 
-    with open('events_table.py') as f:
-        code = f.read()
-        exec(code)
+    create_events_table()
 
     conn = sqlite3.connect('my_db.db')
     cursor = conn.cursor()
@@ -141,7 +140,7 @@ def write(parquet_path):
 
     print("events_table_ created in DB and written to 'data/final_joined_events.parquet'")
 
-def main(args_op, args_path):
+def _main(args_op, args_path):
     global operation_counter
     print("\n")
     print("op:", operation_counter)
@@ -182,9 +181,7 @@ def main(args_op, args_path):
     print("op:", operation_counter)
     print("\n")
 
-if __name__ == "__main__":
-
-    
+def main():    
     logging.basicConfig(
         # filename='logs.log',  [ only logs to file ]
         level=logging.INFO,
@@ -196,9 +193,7 @@ if __name__ == "__main__":
         ]
     )
 
-    with open('sql_trigger.py') as f:
-        code = f.read()
-        exec(code)
+    setup_database()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--operation", choices=['ingest', 'clean', 'validate', 'write', 'all'], default='all', help='ETL operation to execute. Choices are ingest, clean, validate, write or all')
@@ -206,4 +201,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     print(args)
-    main(args.operation, args.path_to_data)
+    _main(args.operation, args.path_to_data)
+
+if __name__ == "__main__":
+    main()

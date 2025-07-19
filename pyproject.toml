@@ -1,23 +1,28 @@
-[project]
+[tool.poetry]
 name = "vehicle-parking-system"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "sudarshan710",email = "sudarshanhope710@gmail.com"}
-]
-requires-python = ">=3.10"
-dependencies = [
-    "pandas (>=2.3.1,<3.0.0)",
-    "pyarrow (>=21.0.0,<22.0.0)",
-    "duckdb (>=1.3.2,<2.0.0)"
+description = "Parking analysis CLI tool"
+authors = ["sudarshan710 <sudarshanhope710@gmail.com>"]
+
+packages = [
+    { include = "parking_toolkit" },
+    { include = "parking_events" }
 ]
 
-
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.poetry.dependencies]
+python = ">=3.10"
+pandas = ">=2.3.1,<3.0.0"
+pyarrow = ">=21.0.0,<22.0.0"
+duckdb = ">=1.3.2,<2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"
 coverage = "^7.9.2"
 
+[tool.poetry.scripts]
+cli1 = "parking_events.cli_tool:main"
+cli2 = "parking_toolkit.analysis_toolkit:main"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

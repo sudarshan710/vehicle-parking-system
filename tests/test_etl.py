@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from unittest.mock import patch
 
-from cli_tool import (
+from parking_events.cli_tool import (
     read_operation_counter,
     write_operation_counter,
     extract,
@@ -17,7 +17,7 @@ from cli_tool import (
 def test_write_and_read_operation_counter(tmp_path):
     counter_file = tmp_path / "counter.txt"
 
-    import cli_tool
+    import parking_events.cli_tool as cli_tool
     original_file = cli_tool.COUNTER_FILE
     cli_tool.COUNTER_FILE = str(counter_file)
 
@@ -92,7 +92,7 @@ def test_validate_with_flags(tmp_path):
     conn.commit()
     conn.close()
 
-    import cli_tool
+    import parking_events.cli_tool as cli_tool
     original_connect = sqlite3.connect
     sqlite3.connect = lambda _: original_connect(str(db_path))
 

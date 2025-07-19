@@ -43,7 +43,7 @@ def compare_zone_perfor():
     """).df()
     print(df)
 
-def main(analysis):
+def _main(analysis):
     if not os.path.exists(FLAG_PATH):
         print("\n Error: You must run CLI1 (ingestinon->writing to database) first to complete the setup.\n")
         sys.exit(1)
@@ -58,10 +58,13 @@ def main(analysis):
             print(f"\n Invalid choice\n")
             sys.exit(1)
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('analysis', nargs='+' ,choices=['top-zone', 'freq-parkers', 'comp-zone'], help='Choose your analysis type')
 
     args = parser.parse_args()
 
-    main(args.analysis)
+    _main(args.analysis)
+
+if __name__ == "__main__":
+    main()
