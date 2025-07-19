@@ -6,6 +6,7 @@ import pandas as pd
 import logging
 
 
+FLAG_PATH = "parking_toolkit/flag.flag"
 COUNTER_FILE = 'operation_counter.txt'
 
 def read_operation_counter():
@@ -134,6 +135,9 @@ def write(parquet_path):
     conn.close()
     os.makedirs('data', exist_ok=True)
     df_final.to_parquet('data/final_joined_events.parquet', index=False)
+
+    with open(FLAG_PATH, "w") as f:
+        f.write('CLI1 SUCCESS')
 
     print("events_table_ created in DB and written to 'data/final_joined_events.parquet'")
 
