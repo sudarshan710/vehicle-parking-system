@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "vehicle-parking-system"
-version = "0.1.0"
+version = "0.1.2-stable"
 description = "Parking analysis CLI tool"
 authors = ["sudarshan710 <sudarshanhope710@gmail.com>"]
 
 packages = [
     { include = "parking_toolkit" },
-    { include = "parking_events" }
+    { include = "parking_events" },
+    { include = "shared_config"}
 ]
 
 [tool.poetry.dependencies]

@@ -6,9 +6,12 @@ import pandas as pd
 import logging
 from parking_events.sql_trigger import setup_database
 from parking_events.events_table import create_events_table
+from shared_config.config import FLAG_PATH
+from shared_config import config
 
-FLAG_PATH = "parking_toolkit/flag.flag"
+
 COUNTER_FILE = 'operation_counter.txt'
+
 
 def read_operation_counter():
     if os.path.exists(COUNTER_FILE):
@@ -77,7 +80,18 @@ def validate(parquet_path):
     # print('validate')
     return parquet_path
 
-def write(parquet_path):
+def write(parquet_path, vehicles_path, zones_path):
+
+    def csv_to_sqlite_pandas(csv_file, sqlite_db, table_name):
+        df = pd.read_csv(csv_file)
+        conn = sqlite3.connect(sqlite_db)
+        df.to_sql(table_name, conn, if_exists='replace', index=False)
+        conn.close()
+        print(f"Imported {csv_file} into {sqlite_db} (table: {table_name})")
+
+    csv_to_sqlite_pandas(vehicles_path, 'my_db.db', 'vehicles')
+    csv_to_sqlite_pandas(zones_path, 'my_db.db', 'parking_zones')
+
     df = pd.read_parquet(parquet_path)
 
     if 'exit-entry' in df.columns:
@@ -133,14 +147,15 @@ def write(parquet_path):
     df_final = pd.read_sql_query('SELECT * FROM events_table', conn)
     conn.close()
     os.makedirs('data', exist_ok=True)
-    df_final.to_parquet('data/final_joined_events.parquet', index=False)
+    df_final.to_parquet('final_joined_events.parquet', index=False)
 
-    with open(FLAG_PATH, "w") as f:
-        f.write('CLI1 SUCCESS')
+    with open(FLAG_PATH, 'w') as f:
+        f.write("ready")
+
 
     print("events_table_ created in DB and written to 'data/final_joined_events.parquet'")
 
-def _main(args_op, args_path):
+def _main(args_op, args_path, args_vehicles, args_zones):
     global operation_counter
     print("\n")
     print("op:", operation_counter)
@@ -150,7 +165,7 @@ def _main(args_op, args_path):
         parquet_path = transform(parquet_path)
         parquet_path = clean(parquet_path)
         validate(parquet_path)
-        write()
+        write(args_path, args_vehicles, args_zones)
         operation_counter = 4  
         write_operation_counter(operation_counter)
 
@@ -166,12 +181,12 @@ def _main(args_op, args_path):
         write_operation_counter(operation_counter)
 
     elif args_op == 'validate' and operation_counter >= 1:
-        validate(args_path)                                         ####   PARQUET vs CSV file path CONFLICT                   
+        validate(args_path)                                                            
         operation_counter = 3
         write_operation_counter(operation_counter)
 
     elif args_op == 'write' and operation_counter > 1 and operation_counter < 4:
-        write(args_path)
+        write(args_path, args_vehicles, args_zones)
         operation_counter = 4
         write_operation_counter(operation_counter)
 
@@ -181,9 +196,12 @@ def _main(args_op, args_path):
     print("op:", operation_counter)
     print("\n")
 
+
+
+
 def main():    
     logging.basicConfig(
-        # filename='logs.log',  [ only logs to file ]
+        # filename='logs.log',  [ only logs to file ]   ----> log to console for checking
         level=logging.INFO,
         # filemode='a',
         format='%(asctime)s - %(levelname)s - %(message)s',
@@ -193,15 +211,22 @@ def main():
         ]
     )
 
+    config.reset_config_contents()
+
+    with open(FLAG_PATH, "w") as f:
+        f.write("not-ready")
+
     setup_database()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--operation", choices=['ingest', 'clean', 'validate', 'write', 'all'], default='all', help='ETL operation to execute. Choices are ingest, clean, validate, write or all')
-    parser.add_argument("path_to_data", help='Path to you ingestion data') 
+    parser.add_argument("--events", type=str, required=True, help='Path to parking_events.csv file') 
+    parser.add_argument("--vehicles", type=str, required=True, help="Path to vehicles.csv file")
+    parser.add_argument("--zones", type=str, required=True, help="Path to parking_zones.csv file")
 
     args = parser.parse_args()
     print(args)
-    _main(args.operation, args.path_to_data)
+    _main(args.operation, args.events, args.vehicles, args.zones)
 
 if __name__ == "__main__":
     main()

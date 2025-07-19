@@ -2,8 +2,7 @@ import os
 import sys
 import argparse
 import duckdb
-
-FLAG_PATH = 'flag.flag'
+from shared_config.config import FLAG_PATH
 
 def top_performing_zone():
     print('\n The following are Top 5 Performing Zone in terms of parking amount paid: ')
@@ -44,9 +43,6 @@ def compare_zone_perfor():
     print(df)
 
 def _main(analysis):
-    if not os.path.exists(FLAG_PATH):
-        print("\n Error: You must run CLI1 (ingestinon->writing to database) first to complete the setup.\n")
-        sys.exit(1)
     for choice in analysis:
         if choice == 'top-zone':
             top_performing_zone()
@@ -59,6 +55,28 @@ def _main(analysis):
             sys.exit(1)
 
 def main():
+    # if not os.path.exists(FLAG_PATH):
+    #     print("Error: You must run CLI1 before CLI2.")
+    #     exit(1)
+    # with open(FLAG_PATH, "r") as f:
+    #     content = f.read().strip()
+    # if content.lower() != "ready":
+    #     print("Error: CLI1 did not complete successfully. Please rerun CLI1.")
+    #     exit(1)
+
+    if os.path.exists(FLAG_PATH):
+        with open(FLAG_PATH) as f:
+            status = f.read().strip()
+        if status == "ready":
+            print("CLI1 completed.")
+        else:
+            print("Incomplete or corrupt flag.")
+            sys.exit(1)
+    else:
+        print("CLI1 has not run.")
+        sys.exit(1)
+
+
     parser = argparse.ArgumentParser()
     parser.add_argument('analysis', nargs='+' ,choices=['top-zone', 'freq-parkers', 'comp-zone'], help='Choose your analysis type')
 
