@@ -42,9 +42,6 @@ def transform(parquet_path):
     df.to_parquet(parquet_path, index=False)
     return parquet_path
 
-# def load():
-#     print('load')
-#     pass
 
 def clean(parquet_path):
     print('clean')
@@ -80,22 +77,65 @@ def validate(parquet_path):
 
 def write(parquet_path):
     df = pd.read_parquet(parquet_path)
-    df['entry_time'] = df['entry_time'].astype(str)
-    df['exit_time'] = df['exit_time'].astype(str)
-    df['zone_id'] = df['zone_id'].astype(str)  # ensure zone_id is string
+
+    if 'exit-entry' in df.columns:
+            df.rename(columns={'exit-entry': 'exit_entry'}, inplace=True)
+
+    df['vehicle_id'] = df['vehicle_id'].astype(str)
+    df['zone_id'] = df['zone_id'].astype(str)
+    df['entry_time'] = pd.to_datetime(df['entry_time']).dt.strftime('%Y-%m-%d %H:%M:%S')
+    df['exit_time'] = pd.to_datetime(df['exit_time']).dt.strftime('%Y-%m-%d %H:%M:%S')
+    df['paid_amount'] = df['paid_amount'].fillna(0).astype(int)
+    df['exit_entry'] = df['exit_entry'].fillna(0).astype(int)
+
+
+    with open('events_table.py') as f:
+        code = f.read()
+        exec(code)
+
     conn = sqlite3.connect('my_db.db')
     cursor = conn.cursor()
+    print(df.head())
 
-    for _, row in df.iterrows():
-        cursor.execute('''
-            INSERT OR REPLACE INTO events_table_2 
-            (event_id, vehicle_id, zone_id, entry_time, exit_time, paid_amount)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (row['event_id'], row['vehicle_id'], row['zone_id'],
-              row['entry_time'], row['exit_time'], row['paid_amount']))
 
+    cursor.executemany('''
+        INSERT INTO events_table(event_id, vehicle_id, zone_id, entry_time, exit_time, paid_amount, exit_entry)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', df[['event_id', 'vehicle_id', 'zone_id', 'entry_time', 'exit_time', 'paid_amount', 'exit_entry']].values.tolist())
+
+    print('here')
+    cursor.execute("PRAGMA table_info(vehicles)")
+    print(cursor.fetchall())
+
+    cursor.execute("ALTER TABLE events_table ADD COLUMN zone_name TEXT;")
+    cursor.execute("ALTER TABLE events_table ADD COLUMN rate_per_hour REAL;")
+    cursor.execute("ALTER TABLE events_table ADD COLUMN is_valet INTEGER;")  
+    cursor.execute("ALTER TABLE events_table ADD COLUMN plate_number TEXT;")
+    cursor.execute("ALTER TABLE events_table ADD COLUMN owner_name TEXT;")
+    cursor.execute("ALTER TABLE events_table ADD COLUMN type TEXT;")
+    cursor.execute("ALTER TABLE events_table ADD COLUMN reason TEXT DEFAULT 'valid';")
+
+    update_sql = '''
+    UPDATE events_table
+    SET 
+        zone_name = (SELECT pz.zone_name FROM parking_zones pz WHERE pz.zone_id = events_table.zone_id),
+        rate_per_hour = (SELECT pz.rate_per_hour FROM parking_zones pz WHERE pz.zone_id = events_table.zone_id),
+        is_valet = (SELECT pz.is_valet FROM parking_zones pz WHERE pz.zone_id = events_table.zone_id),
+        plate_number = (SELECT v.plate_number FROM vehicles v WHERE v.vehicle_id = events_table.vehicle_id),
+        owner_name = (SELECT v.owner_name FROM vehicles v WHERE v.vehicle_id = events_table.vehicle_id),
+        type = (SELECT v.type FROM vehicles v WHERE v.vehicle_id = events_table.vehicle_id),
+        reason = COALESCE((SELECT ev.reason FROM invalid_events ev WHERE ev.event_id = events_table.event_id),
+        reason)
+    ''' 
+
+    cursor.execute(update_sql)
     conn.commit()
+    df_final = pd.read_sql_query('SELECT * FROM events_table', conn)
     conn.close()
+    os.makedirs('data', exist_ok=True)
+    df_final.to_parquet('data/final_joined_events.parquet', index=False)
+
+    print("events_table_ created in DB and written to 'data/final_joined_events.parquet'")
 
 def main(args_op, args_path):
     global operation_counter
@@ -127,7 +167,7 @@ def main(args_op, args_path):
         operation_counter = 3
         write_operation_counter(operation_counter)
 
-    elif args_op == 'write' and operation_counter > 1:
+    elif args_op == 'write' and operation_counter > 1 and operation_counter < 4:
         write(args_path)
         operation_counter = 4
         write_operation_counter(operation_counter)

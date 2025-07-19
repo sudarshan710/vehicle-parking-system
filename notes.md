@@ -13,3 +13,5 @@
 -- For now, empty entries/exists or negatives amounts are ONYL FLAGGED but RETAINED in the FINAL DATABASE.
 
 -- **While writing to final database, make sure to set proper datatypes for all columns from parquet -> sql table.**
+
+-- **querying in SQLite vs exporting to Parquet and using pandas or another tool for analytics**
